@@ -7,7 +7,8 @@ public class Prime extends Task{
     private BigInteger number;
     private int bytes;
 
-    public Prime(int bytes) {
+    public Prime(Task.TaskType taskType, int bytes) {
+        super(taskType);
         this.bytes = bytes;
     }
 

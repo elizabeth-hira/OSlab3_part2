@@ -6,7 +6,8 @@ public class Factorial extends Task{
     private BigInteger result;
     private int number;
 
-    public Factorial(int number) {
+    public Factorial(TaskType taskType, int number) {
+        super(taskType);
         this.number = number;
     }
 

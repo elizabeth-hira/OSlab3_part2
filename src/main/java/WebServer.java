@@ -4,18 +4,26 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class WebServer {
 
     private static final int PORT = 8080;
 
     private static ConcurrentHashMap<Integer, Task> tasksMap;
+    public static LinkedBlockingQueue<Task> tasksQueue = new LinkedBlockingQueue<>();
+    private static int threadNum = 4;
 
     private static class ServerThread extends Thread {
         @Override
         public void run() {
             try (ServerSocket server = new ServerSocket(PORT)) {
                 try {
+                    for (int i = 0; i < WebServer.threadNum; i++) {
+                        new TaskThread().start();
+                    }
                     while (true) {
                         Socket client = server.accept();
 
@@ -64,18 +72,18 @@ public class WebServer {
                                 switch(request.getKey()) {
                                     case "countFactorial":
                                     {
-                                        Factorial factorialTask = new Factorial(Integer.parseInt(request.getValue()));
-                                        new TaskThread(factorialTask, TaskThread.TaskType.FACTORIAL).start();
+                                        Factorial factorialTask = new Factorial(Task.TaskType.FACTORIAL, Integer.parseInt(request.getValue()));
                                         tasksMap.put(factorialTask.getID(), factorialTask);
+                                        tasksQueue.add(factorialTask);
                                         out.println(factorialTask.getID());
                                         out.flush();
                                         break;
                                     }
                                     case "countPrime":
                                     {
-                                        Prime primeTask = new Prime(Integer.parseInt(request.getValue()));
-                                        new TaskThread(primeTask, TaskThread.TaskType.PRIME).start();
+                                        Prime primeTask = new Prime(Task.TaskType.PRIME, Integer.parseInt(request.getValue()));
                                         tasksMap.put(primeTask.getID(), primeTask);
+                                        tasksQueue.add(primeTask);
                                         out.println(primeTask.getID());
                                         out.flush();
                                         break;

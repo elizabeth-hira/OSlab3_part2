@@ -5,7 +5,11 @@ public class Task {
 
     public enum Status {QUEUED, PROCESSING, DONE }
 
+    public enum TaskType { FACTORIAL, PRIME }
+
+
     private Status status;
+    private TaskType taskType;
 
     private final int ID;
     private static int nextID = 0;
@@ -14,9 +18,12 @@ public class Task {
         return ID;
     }
 
-    public Task() {
+    public TaskType getTaskType(){return taskType;}
+
+    public Task(TaskType taskType) {
         ID = nextID++;
         this.status = Status.QUEUED;
+        this.taskType = taskType;
     }
 
     public Status getStatus() {
