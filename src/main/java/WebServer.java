@@ -29,8 +29,6 @@ public class WebServer {
                         BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                         PrintWriter out = new PrintWriter(client.getOutputStream());
 
-
-
                         String line = in.readLine();
                         if(line == null) {
                             continue;
