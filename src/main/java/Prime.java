@@ -8,7 +8,6 @@ public class Prime extends Task{
     private int bytes;
 
     public Prime(int bytes) {
-        super(TaskType.PRIME);
         this.bytes = bytes;
     }
 
@@ -24,10 +23,11 @@ public class Prime extends Task{
         this.bytes = bytes;
     }
 
-    public BigInteger countPrime() {
+    @Override
+    public void execute() {
         number = testFerma(bytes);
-        return getResult();
     }
+
     public BigInteger findNumber(int bytes) {
         Random random = new Random();
 

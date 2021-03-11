@@ -1,11 +1,7 @@
 public class TaskThread extends Thread {
-
-
     private Task task;
-    private Task.TaskType type;
 
     public TaskThread() {
-
     }
 
     @Override
@@ -16,19 +12,8 @@ public class TaskThread extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            type = task.getTaskType();
-
             task.setStatus(Task.Status.PROCESSING);
-            switch (type) {
-                case FACTORIAL: {
-                    ((Factorial) task).countFactorial();
-                    break;
-                }
-                case PRIME: {
-                    ((Prime) task).countPrime();
-                    break;
-                }
-            }
+            task.execute();
             task.setStatus(Task.Status.DONE);
         }
     }

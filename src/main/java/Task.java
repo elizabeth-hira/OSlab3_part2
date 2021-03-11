@@ -5,11 +5,7 @@ public class Task {
 
     public enum Status {QUEUED, PROCESSING, DONE }
 
-    public enum TaskType { FACTORIAL, PRIME }
-
-
     private Status status;
-    private TaskType taskType;
 
     private final int ID;
     private static int nextID = 0;
@@ -18,12 +14,9 @@ public class Task {
         return ID;
     }
 
-    public TaskType getTaskType(){return taskType;}
-
-    public Task(TaskType taskType) {
+    public Task() {
         ID = nextID++;
         this.status = Status.QUEUED;
-        this.taskType = taskType;
     }
 
     public Status getStatus() {
@@ -33,6 +26,8 @@ public class Task {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public void execute() {}
 
     public void printResult(PrintWriter out) throws IOException {}
 }

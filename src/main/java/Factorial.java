@@ -7,7 +7,6 @@ public class Factorial extends Task{
     private int number;
 
     public Factorial(int number) {
-        super(TaskType.FACTORIAL);
         this.number = number;
     }
 
@@ -23,11 +22,11 @@ public class Factorial extends Task{
         this.number = number;
     }
 
-    public BigInteger countFactorial() {
+    @Override
+    public void execute() {
         result = BigInteger.ONE;
         for (int i = 1; i <= number; i++)
             result = result.multiply(BigInteger.valueOf(i));
-        return result;
     }
 
     @Override
