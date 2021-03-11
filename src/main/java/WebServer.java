@@ -3,10 +3,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
+
 
 public class WebServer {
 
@@ -15,6 +13,7 @@ public class WebServer {
     private static ConcurrentHashMap<Integer, Task> tasksMap;
     public static LinkedBlockingQueue<Task> tasksQueue;
     private static int threadNum = 4;
+    ExecutorService pool = Executors.newCachedThreadPool();
 
     private static class ServerThread extends Thread {
         @Override
@@ -53,6 +52,7 @@ public class WebServer {
                                         if(task != null) {
                                             if (task.getStatus() != Task.Status.DONE) {
                                                 out.println("Status: " + task.getStatus().name());
+                                                out.flush();
                                             }
                                             else {
                                                 task.printResult(out);
@@ -112,6 +112,7 @@ public class WebServer {
     }
 
     public void start() {
-        new ServerThread().start();
+        ServerThread thread = new ServerThread();
+        pool.execute(thread);
     }
 }
