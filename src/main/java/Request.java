@@ -21,12 +21,15 @@ public class Request {
     private void setValue(String value) {
         this.value = value;
     }
+    private void setType(RequestType type){
+        this.type = type;
+    }
 
     public static Request parse(String line) throws Exception{
         Request request = new Request();
         StringTokenizer tokenizer = new StringTokenizer(line, " ");
         String strType = tokenizer.nextToken();
-        setType(strType, request);
+        request.setType(RequestType.valueOf(strType));
         String url = tokenizer.nextToken();
         tokenizer = new StringTokenizer(url, "/?&=");
         try {
@@ -39,16 +42,5 @@ public class Request {
         if(tokenizer.hasMoreTokens())
             throw new Exception("Invalid request");
         return request;
-    }
-    public static void setType(String str, Request request) {
-        switch (str){
-            case "GET":
-                request.type = RequestType.GET;
-                break;
-            case "POST":{
-                request.type = RequestType.POST;
-                break;
-            }
-        }
     }
 }
