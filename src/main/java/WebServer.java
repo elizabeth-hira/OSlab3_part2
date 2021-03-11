@@ -13,7 +13,7 @@ public class WebServer {
     private static final int PORT = 8080;
 
     private static ConcurrentHashMap<Integer, Task> tasksMap;
-    public static LinkedBlockingQueue<Task> tasksQueue = new LinkedBlockingQueue<>();
+    public static LinkedBlockingQueue<Task> tasksQueue;
     private static int threadNum = 4;
 
     private static class ServerThread extends Thread {
@@ -69,25 +69,24 @@ public class WebServer {
                             }
                             case POST:
                             {
+                                Task task = null;
                                 switch(request.getKey()) {
                                     case "countFactorial":
                                     {
-                                        Factorial factorialTask = new Factorial(Task.TaskType.FACTORIAL, Integer.parseInt(request.getValue()));
-                                        tasksMap.put(factorialTask.getID(), factorialTask);
-                                        tasksQueue.add(factorialTask);
-                                        out.println(factorialTask.getID());
-                                        out.flush();
+                                        task = new Factorial(Integer.parseInt(request.getValue()));
                                         break;
                                     }
                                     case "countPrime":
                                     {
-                                        Prime primeTask = new Prime(Task.TaskType.PRIME, Integer.parseInt(request.getValue()));
-                                        tasksMap.put(primeTask.getID(), primeTask);
-                                        tasksQueue.add(primeTask);
-                                        out.println(primeTask.getID());
-                                        out.flush();
+                                        task = new Prime(Integer.parseInt(request.getValue()));
                                         break;
                                     }
+                                }
+                                if (task != null){
+                                    tasksMap.put(task.getID(), task);
+                                    tasksQueue.add(task);
+                                    out.println(task.getID());
+                                    out.flush();
                                 }
                                 break;
                             }
@@ -109,6 +108,7 @@ public class WebServer {
 
     public WebServer() {
         tasksMap = new ConcurrentHashMap<>();
+        tasksQueue = new LinkedBlockingQueue<>();
     }
 
     public void start() {
