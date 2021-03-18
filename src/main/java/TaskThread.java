@@ -3,11 +3,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.FutureTask;
 
 public class TaskThread extends Thread {
     private final Socket client;
     private BufferedReader in;
     private PrintWriter out;
+
+    private FutureTask<Void> future;
 
     public TaskThread(Socket client) {
         this.client = client;
@@ -39,6 +42,35 @@ public class TaskThread extends Thread {
             Request request = Request.parse(line);
 
             switch (request.type) {
+                case POST: {
+                    task = null;
+                    switch (request.getKey()) {
+                        case "countFactorial": {
+                            task = new Factorial(Integer.parseInt(request.getValue()));
+                            break;
+                        }
+                        case "countPrime": {
+                            task = new Prime(Integer.parseInt(request.getValue()));
+                            break;
+                        }
+                    }
+                    if (task != null) {
+                        WebServer.tasksMap.put(task.getID(), task);
+
+                        out.println(task.getID());
+                        out.flush();
+
+                        Task finalTask = task;
+                        future = new FutureTask<>(() -> {                   //Асинхронное выполнение
+                            finalTask.setStatus(Task.Status.PROCESSING);    //task.execute()
+                            finalTask.execute();
+                            finalTask.setStatus(Task.Status.DONE);
+                            return null;
+                        });
+                        new Thread(future).start();
+                    }
+                    break;
+                }
                 case GET: {
                     switch (request.getKey()) {
                         case "id": {
@@ -59,39 +91,17 @@ public class TaskThread extends Thread {
                     }
                     break;
                 }
-                case POST: {
-                    task = null;
-                    switch (request.getKey()) {
-                        case "countFactorial": {
-                            task = new Factorial(Integer.parseInt(request.getValue()));
-                            break;
-                        }
-                        case "countPrime": {
-                            task = new Prime(Integer.parseInt(request.getValue()));
-                            break;
-                        }
-                    }
-                    if (task != null) {
-                        WebServer.tasksMap.put(task.getID(), task);
-
-                        out.println(task.getID());
-                        out.flush();
-                        out.close();
-
-                        task.setStatus(Task.Status.PROCESSING);
-                        task.execute();
-                        task.setStatus(Task.Status.DONE);
-                    }
-                    break;
-                }
             }
         }
         catch (Exception error) {
             error.printStackTrace();
+            future.cancel(true);
         }
         finally {
             try {
                 closeResources();
+                if(future != null && !future.isCancelled())
+                    future.get();
             } catch (Exception e) {
                 e.printStackTrace();
             }
