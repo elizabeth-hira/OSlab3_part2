@@ -24,11 +24,8 @@ public class TaskThread extends Thread {
                 in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 out = new PrintWriter(client.getOutputStream());
 
-                // Start sending our reply, using the HTTP 1.1 protocol
-                out.print("HTTP/1.1 200 \r\n"); // Version & status code
-                out.print("Content-Type: text/plain\r\n"); // The type of data
-                out.print("Connection: close\r\n"); // Will close stream
-                out.print("\r\n"); // End of headers
+                out.print("HTTP/1.1 200 \r\n");
+                out.print("\r\n");
 
                 String line = in.readLine();
                 if (line == null) {
