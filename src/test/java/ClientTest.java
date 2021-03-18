@@ -11,6 +11,7 @@ class ClientTest {
         Client c2 = new Client("localhost", 8080);
 
         int id = c1.sendPost("POST countFactorial=5");
+        Thread.sleep(100);
         BigInteger ans = c2.sendGet("GET id=0");
 
         c1.closeResources();
