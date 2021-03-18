@@ -6,9 +6,9 @@ import java.net.Socket;
 import java.util.Stack;
 
 public class Client {
-    private Socket client;
-    private BufferedReader in;
-    private PrintWriter out;
+    private final Socket client;
+    private final BufferedReader in;
+    private final PrintWriter out;
 
     public Client(String host, int port) throws Exception {
         client = new Socket(host, port);
@@ -38,5 +38,11 @@ public class Client {
         }
 
         return new BigInteger(lines.peek());
+    }
+
+    public void closeResources() throws Exception {
+        in.close();
+        out.close();
+        client.close();
     }
 }
