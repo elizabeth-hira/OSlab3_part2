@@ -76,8 +76,7 @@ public class TaskThread extends Thread {
 
                         out.println(task.getID());
                         out.flush();
-
-                        //closeResources();
+                        out.close();
 
                         task.setStatus(Task.Status.PROCESSING);
                         task.execute();
