@@ -2,15 +2,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.concurrent.FutureTask;
 
 public class TaskThread implements Runnable {
     private final Socket client;
     private BufferedReader in;
     private PrintWriter out;
-
-    //private FutureTask<Void> future;
 
     public TaskThread(Socket client) {
         this.client = client;
@@ -25,8 +23,6 @@ public class TaskThread implements Runnable {
     @Override
     public void run() {
         try {
-            Task task;
-
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
 
@@ -40,76 +36,27 @@ public class TaskThread implements Runnable {
             }
 
             Request request = Request.parse(line);
+            String response = null;
 
-            switch (request.type) {
-                case POST: {
-                    task = null;
-                    switch (request.getKey()) {
-                        case "countFactorial": {
-                            task = new Factorial(Integer.parseInt(request.getValue()));
-                            break;
-                        }
-                        case "countPrime": {
-                            task = new Prime(Integer.parseInt(request.getValue()));
-                            break;
-                        }
+            Controllers controller = new Controllers();
+            Class<?> clazz = controller.getClass();
+            for(Method method : clazz.getDeclaredMethods()) {
+                if(method.isAnnotationPresent(ControllerType.class)) {
+                    ControllerType annotation = method.getAnnotation(ControllerType.class);
+                    if(annotation.type().equals(request.type)
+                       && annotation.name().equals(request.getKey())) {
+                        response = (String) method.invoke(controller, request);
                     }
-                    if (task != null) {
-                        WebServer.tasksMap.put(task.getID(), task);
-
-                        out.println(task.getID());
-                        out.flush();
-
-                        Task finalTask = task;
-                        /*future = new FutureTask<>(() -> {                   //Асинхронное выполнение
-                            finalTask.setStatus(Task.Status.PROCESSING);    //task.execute()
-                            finalTask.execute();
-                            finalTask.setStatus(Task.Status.DONE);
-                            return null;
-                        });*/
-                        WebServer.poolTasks.execute(() -> {                   //Асинхронное выполнение
-                            finalTask.setStatus(Task.Status.PROCESSING);    //task.execute()
-                            finalTask.execute();
-                            finalTask.setStatus(Task.Status.DONE);
-                        });
-                    }
-                    break;
-                }
-                case GET: {
-                    switch (request.getKey()) {
-                        case "id": {
-                            task = WebServer.tasksMap.get(Integer.parseInt(request.getValue()));
-                            if (task != null) {
-                                if (task.getStatus() != Task.Status.DONE) {
-                                    out.println("Status: " + task.getStatus().name());
-                                    out.flush();
-                                } else {
-                                    task.printResult(out);
-                                }
-                            } else {
-                                out.println("Error: No such id found");
-                                out.flush();
-                            }
-                            break;
-                        }
-                    }
-                    break;
                 }
             }
-        }
 
-        catch (Exception error) {
-            error.printStackTrace();
-            //future.cancel(true);
+            out.println(response);
+            out.flush();
         }
+        catch (Exception error) { error.printStackTrace(); }
         finally {
-            try {
-                closeResources();
-                //if(future != null && !future.isCancelled())
-                    //future.get();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            try { closeResources(); }
+            catch (Exception e) { e.printStackTrace(); }
         }
     }
 }
