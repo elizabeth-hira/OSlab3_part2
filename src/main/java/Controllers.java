@@ -1,7 +1,7 @@
 public class Controllers {
     private void executeTaskAsync(Task task) {
         WebServer.tasksMap.put(task.getID(), task);
-        WebServer.poolTasks.execute(() -> {
+        WebServer.poolTasks.execute(() -> {                   // Асинхронное выполнение
             task.setStatus(Task.Status.PROCESSING);
             task.execute();
             task.setStatus(Task.Status.DONE);
