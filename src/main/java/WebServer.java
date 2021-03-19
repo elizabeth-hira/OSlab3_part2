@@ -18,7 +18,7 @@ public class WebServer implements Runnable {
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!server.isClosed()) {
                 poolRequests.execute(new TaskThread(server.accept()));
             }
         }
