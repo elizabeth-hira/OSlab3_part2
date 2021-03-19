@@ -1,4 +1,3 @@
-import java.io.PrintWriter;
 import java.math.BigInteger;
 
 public class Factorial extends Task{
@@ -30,8 +29,7 @@ public class Factorial extends Task{
     }
 
     @Override
-    public void printResult(PrintWriter out) {
-        out.println(getResult());
-        out.flush();
+    public String response() {
+        return String.valueOf(getResult());
     }
 }

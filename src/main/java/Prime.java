@@ -1,4 +1,3 @@
-import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -60,8 +59,7 @@ public class Prime extends Task{
     }
 
     @Override
-    public void printResult(PrintWriter out) {
-        out.println(getResult());
-        out.flush();
+    public String response() {
+        return String.valueOf(getResult());
     }
 }

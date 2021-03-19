@@ -1,7 +1,4 @@
-import java.io.IOException;
-import java.io.PrintWriter;
-
-public class Task {
+public abstract class Task {
 
     public enum Status {QUEUED, PROCESSING, DONE }
 
@@ -27,7 +24,7 @@ public class Task {
         this.status = status;
     }
 
-    public void execute() {}
+    public abstract void execute();
 
-    public void printResult(PrintWriter out) throws IOException {}
+    public abstract String response();
 }
