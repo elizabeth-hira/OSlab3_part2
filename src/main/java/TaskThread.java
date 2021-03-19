@@ -5,12 +5,12 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.FutureTask;
 
-public class TaskThread extends Thread {
+public class TaskThread implements Runnable {
     private final Socket client;
     private BufferedReader in;
     private PrintWriter out;
 
-    private FutureTask<Void> future;
+    //private FutureTask<Void> future;
 
     public TaskThread(Socket client) {
         this.client = client;
@@ -61,13 +61,17 @@ public class TaskThread extends Thread {
                         out.flush();
 
                         Task finalTask = task;
-                        future = new FutureTask<>(() -> {                   //Асинхронное выполнение
+                        /*future = new FutureTask<>(() -> {                   //Асинхронное выполнение
                             finalTask.setStatus(Task.Status.PROCESSING);    //task.execute()
                             finalTask.execute();
                             finalTask.setStatus(Task.Status.DONE);
                             return null;
+                        });*/
+                        WebServer.poolTasks.execute(() -> {                   //Асинхронное выполнение
+                            finalTask.setStatus(Task.Status.PROCESSING);    //task.execute()
+                            finalTask.execute();
+                            finalTask.setStatus(Task.Status.DONE);
                         });
-                        new Thread(future).start();
                     }
                     break;
                 }
@@ -93,15 +97,16 @@ public class TaskThread extends Thread {
                 }
             }
         }
+
         catch (Exception error) {
             error.printStackTrace();
-            future.cancel(true);
+            //future.cancel(true);
         }
         finally {
             try {
                 closeResources();
-                if(future != null && !future.isCancelled())
-                    future.get();
+                //if(future != null && !future.isCancelled())
+                    //future.get();
             } catch (Exception e) {
                 e.printStackTrace();
             }
