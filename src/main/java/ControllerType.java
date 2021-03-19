@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Innokenty {
+public @interface ControllerType {
     Request.RequestType type();
     String name() default "";
 }
