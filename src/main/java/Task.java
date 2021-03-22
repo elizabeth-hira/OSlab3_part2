@@ -1,6 +1,6 @@
 public abstract class Task {
 
-    public enum Status {QUEUED, PROCESSING, DONE }
+    public enum Status {PROCESSING, DONE }
 
     private Status status;
 
@@ -13,7 +13,7 @@ public abstract class Task {
 
     public Task() {
         ID = nextID++;
-        this.status = Status.QUEUED;
+        this.status = Status.PROCESSING;
     }
 
     public Status getStatus() {

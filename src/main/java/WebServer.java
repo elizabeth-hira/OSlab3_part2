@@ -3,7 +3,7 @@ import java.util.concurrent.*;
 
 
 public class WebServer implements Runnable {
-    public static ConcurrentHashMap<Integer, Task> tasksMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<Integer, Future<Task>> tasksMap = new ConcurrentHashMap<>();
     public static ExecutorService poolTasks;
     private final ExecutorService poolRequests;
 
@@ -24,6 +24,8 @@ public class WebServer implements Runnable {
         }
         catch(Exception e) {
             e.printStackTrace();
+        }
+        finally {
             poolRequests.shutdown();
             poolTasks.shutdown();
         }

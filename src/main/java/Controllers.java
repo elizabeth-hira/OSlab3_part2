@@ -1,11 +1,15 @@
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 public class Controllers {
     private void executeTaskAsync(Task task) {
-        WebServer.tasksMap.put(task.getID(), task);
-        WebServer.poolTasks.execute(() -> {                   // Асинхронное выполнение
+        Future<Task> future = WebServer.poolTasks.submit(() -> { // Асинхронное выполнение
             task.setStatus(Task.Status.PROCESSING);
             task.execute();
             task.setStatus(Task.Status.DONE);
+            return task;
         });
+        WebServer.tasksMap.put(task.getID(), future);
     }
 
     @ControllerType(type=Request.RequestType.POST, name="countFactorial")
@@ -22,10 +26,10 @@ public class Controllers {
     }
 
     @ControllerType(type=Request.RequestType.GET, name="id")
-    public String getInfo(Request request) {
-        Task task = WebServer.tasksMap.get(Integer.parseInt(request.getValue()));
-        if (task == null) return "Error: No such id found.";
-        if (task.getStatus() != Task.Status.DONE) return "Status: " + task.getStatus().name();
-        return task.response();
+    public String getInfo(Request request) throws ExecutionException, InterruptedException {
+        Future<Task> futureTask = WebServer.tasksMap.get(Integer.parseInt(request.getValue()));
+        if (futureTask == null) return "Error: No such id found.";
+        if (!futureTask.isDone()) return "Status: " + Task.Status.PROCESSING.toString();
+        return futureTask.get().response();
     }
 }
