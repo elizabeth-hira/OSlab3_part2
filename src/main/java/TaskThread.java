@@ -20,6 +20,20 @@ public class TaskThread implements Runnable {
         client.close();
     }
 
+    private String findAnnotation(Request request) throws Exception {
+        Class<?> clazz = Controllers.class;
+        for(Method method : clazz.getDeclaredMethods()) {
+            if(method.isAnnotationPresent(ControllerType.class)) {
+                ControllerType annotation = method.getAnnotation(ControllerType.class);
+                if(annotation.type().equals(request.type)
+                        && annotation.name().equals(request.getKey())) {
+                    return (String) method.invoke(null, request);
+                }
+            }
+        }
+        return "Invalid request.";
+    }
+
     @Override
     public void run() {
         try {
@@ -36,19 +50,7 @@ public class TaskThread implements Runnable {
             }
 
             Request request = Request.parse(line);
-            String response = null;
-
-            Controllers controller = new Controllers();
-            Class<?> clazz = controller.getClass();
-            for(Method method : clazz.getDeclaredMethods()) {
-                if(method.isAnnotationPresent(ControllerType.class)) {
-                    ControllerType annotation = method.getAnnotation(ControllerType.class);
-                    if(annotation.type().equals(request.type)
-                       && annotation.name().equals(request.getKey())) {
-                        response = (String) method.invoke(controller, request);
-                    }
-                }
-            }
+            String response = findAnnotation(request);
 
             out.println(response);
             out.flush();
