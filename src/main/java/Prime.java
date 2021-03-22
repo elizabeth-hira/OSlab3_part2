@@ -32,13 +32,17 @@ public class Prime extends Task{
             BigInteger number = findNumber(bytes);
             BigInteger a;
 
-            a = new BigInteger(bytes, random).mod(number.subtract(BigInteger.TWO));
+            boolean condition = false;
+            for (int i = 0; i < 10 && !condition; i++) {
+                a = new BigInteger(bytes, random).mod(number.subtract(BigInteger.TWO));
 
-            if (!a.gcd(number).equals(BigInteger.ONE))
-                continue;
+                if (!a.gcd(number).equals(BigInteger.ONE))
+                    condition = true;
 
-            if (!a.modPow(number.subtract(BigInteger.ONE), number).equals(BigInteger.ONE))
-                continue;
+                if (!a.modPow(number.subtract(BigInteger.ONE), number).equals(BigInteger.ONE))
+                    condition = true;
+            }
+            if(condition) continue;
 
             return number;
         }
