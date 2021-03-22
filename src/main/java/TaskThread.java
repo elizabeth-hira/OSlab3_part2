@@ -25,7 +25,7 @@ public class TaskThread implements Runnable {
         for(Method method : clazz.getDeclaredMethods()) {
             if(method.isAnnotationPresent(ControllerType.class)) {
                 ControllerType annotation = method.getAnnotation(ControllerType.class);
-                if(annotation.type().equals(request.type)
+                if(annotation.type().equals(request.getType())
                         && annotation.name().equals(request.getKey())) {
                     return (String) method.invoke(null, request);
                 }

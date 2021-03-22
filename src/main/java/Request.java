@@ -1,29 +1,21 @@
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.StringTokenizer;
 
 public class Request {
 
     public enum RequestType { GET, POST }
-    public RequestType type;
 
+    @Getter @Setter(AccessLevel.PRIVATE)
+    private RequestType type;
+
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private String key;
+
+    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
     private String value;
-
-    public String getKey() {
-        return key;
-    }
-    public String getValue() {
-        return value;
-    }
-
-    private void setKey(String key) {
-        this.key = key;
-    }
-    private void setValue(String value) {
-        this.value = value;
-    }
-    private void setType(RequestType type){
-        this.type = type;
-    }
 
     public static Request parse(String line) throws Exception{
         Request request = new Request();

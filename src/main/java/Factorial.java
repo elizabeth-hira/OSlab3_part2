@@ -1,23 +1,17 @@
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigInteger;
 
 public class Factorial extends Task{
 
+    @Getter
     private BigInteger result;
+
+    @Getter @Setter
     private int number;
 
     public Factorial(int number) {
-        this.number = number;
-    }
-
-    public BigInteger getResult() {
-        return result;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
         this.number = number;
     }
 

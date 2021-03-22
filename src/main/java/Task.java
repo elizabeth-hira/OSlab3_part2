@@ -1,7 +1,11 @@
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class Task {
 
     public enum Status {PROCESSING, DONE }
 
+    @Getter @Setter
     private Status status;
 
     private final int ID;
@@ -14,14 +18,6 @@ public abstract class Task {
     public Task() {
         ID = nextID++;
         this.status = Status.PROCESSING;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public abstract void execute();
