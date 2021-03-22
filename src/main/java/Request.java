@@ -11,10 +11,10 @@ public class Request {
     @Getter @Setter(AccessLevel.PRIVATE)
     private RequestType type;
 
-    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    @Getter @Setter(AccessLevel.PRIVATE)
     private String key;
 
-    @Getter(AccessLevel.PRIVATE) @Setter(AccessLevel.PRIVATE)
+    @Getter @Setter(AccessLevel.PRIVATE)
     private String value;
 
     public static Request parse(String line) throws Exception{
